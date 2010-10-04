@@ -1,8 +1,10 @@
 package org.scinix.android.gallorg;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class GallOrgShare extends Activity implements OnClickListener {
@@ -30,6 +33,7 @@ public class GallOrgShare extends Activity implements OnClickListener {
 		setContentView(R.layout.share);
 		TextView tv = (TextView) findViewById(R.id.filelist);
 		TextView amount = (TextView) findViewById(R.id.amount_of_files);
+		EditText destination = (EditText) findViewById(R.id.destination);
 
 		File rootDir = new File(ORION_ROOT);
 		if (rootDir.exists() && rootDir.isDirectory()) {
@@ -86,6 +90,10 @@ public class GallOrgShare extends Activity implements OnClickListener {
 			}
 			tv.append("\n");
 		}
+
+		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
+		destination.setText((nowFormatted.format(new Date())).toString());
+
 		amount.setText(Integer.toString(fileArray.size()));
 
 		btnMove = (Button) findViewById(R.id.ok);
