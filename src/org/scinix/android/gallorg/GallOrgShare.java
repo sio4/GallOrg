@@ -29,6 +29,7 @@ public class GallOrgShare extends Activity implements OnClickListener {
 
 		setContentView(R.layout.share);
 		TextView tv = (TextView) findViewById(R.id.filelist);
+		TextView amount = (TextView) findViewById(R.id.amount_of_files);
 
 		File rootDir = new File(ORION_ROOT);
 		if (rootDir.exists() && rootDir.isDirectory()) {
@@ -85,6 +86,7 @@ public class GallOrgShare extends Activity implements OnClickListener {
 			}
 			tv.append("\n");
 		}
+		amount.setText(Integer.toString(fileArray.size()));
 
 		btnMove = (Button) findViewById(R.id.ok);
 		btnCancel = (Button) findViewById(R.id.cancel);

@@ -4,46 +4,60 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:id="@+id/dialog"
 	android:minWidth="400px" android:layout_height="fill_parent">
-	<TextView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/labelFiles"
-		android:text="Selected Files :" android:layout_margin="5px" />
-	<ScrollView android:id="@+id/ScrollView01"
-		android:layout_width="fill_parent" android:layout_margin="5px" android:layout_height="wrap_content">
-		<TextView android:layout_height="wrap_content" android:id="@+id/filelist"
-			android:layout_width="fill_parent" />
-	</ScrollView>
-	<ExpandableListView android:id="@+id/ExpandableListView01"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" />
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_margin="5px"
+		android:id="@+id/sourceLayout">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Selected Files("
+			android:id="@+id/selected_files" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="0"
+			android:id="@+id/amount_of_files" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text=") will be"
+			android:id="@+id/will_be" />
+	</LinearLayout>
 
 	<TableRow android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/destLine">
-		<TextView android:layout_width="wrap_content" android:id="@+id/labelDest"
-			android:layout_height="wrap_content" android:text="New Album"
-			android:layout_margin="5px" />
+		android:layout_width="fill_parent" android:id="@+id/destLayout">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_margin="5px"
+			android:text="organized into" android:id="@+id/organized_into" />
 		<EditText android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:id="@+id/destination"
 			android:text="New" />
 	</TableRow>
 	<TableRow android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/recentLine">
+		android:layout_width="fill_parent" android:id="@+id/recentLayout">
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_gravity="center"
-			android:id="@+id/labelRecent" android:text="Or"
-			android:layout_margin="5px" />
+			android:layout_margin="5px" android:text="or" android:id="@+id/or" />
 		<Spinner android:layout_height="wrap_content"
-			android:layout_width="fill_parent" android:id="@+id/recent" />
-
-	
-
-
-</TableRow><TableRow android:id="@+id/TableRow01" android:layout_height="wrap_content" android:layout_width="fill_parent"><CheckBox android:layout_height="wrap_content" android:text="Scan Media" android:id="@+id/scanmedia" android:layout_width="wrap_content"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/cleanup" android:text="Cleanup Empty"></CheckBox>
-</TableRow>
+			android:layout_width="fill_parent" android:id="@+id/exists" />
+	</TableRow>
+	<TableRow android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/optionLayout">
+		<CheckBox android:layout_height="wrap_content" android:text="Scan Media"
+			android:id="@+id/scanmedia" android:layout_width="wrap_content" />
+		<CheckBox android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/cleanup"
+			android:text="Cleanup Empty" />
+	</TableRow>
 	<LinearLayout android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/buttonLine">
+		android:layout_width="fill_parent" android:id="@+id/actionLayout">
 		<Button android:layout_height="wrap_content" android:text="Cancel"
 			android:id="@+id/cancel" android:layout_width="wrap_content" />
 		<Button android:layout_height="wrap_content" android:id="@+id/ok"
 			android:text="Move" android:layout_width="fill_parent" />
 	</LinearLayout>
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/details"
+		android:text="Selected Files :" android:layout_margin="5px" />
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_margin="5px" android:layout_height="wrap_content"
+		android:id="@+id/detailsLayout">
+		<TextView android:layout_height="wrap_content" android:id="@+id/filelist"
+			android:layout_width="fill_parent" />
+	</ScrollView>
 
 </LinearLayout>
