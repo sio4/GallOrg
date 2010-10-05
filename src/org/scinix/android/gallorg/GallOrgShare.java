@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -46,10 +47,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		/* get existing album(directory) list from ORION_ROOT */
 		File rootDir = new File(ORION_ROOT);
 		if (rootDir.exists() && rootDir.isDirectory()) {
-			ArrayList < File > dirList =
-			    new ArrayList < File >
-			    (Arrays.asList(rootDir.listFiles()));
-			Iterator < File > e = dirList.iterator();
+			ArrayList<File> dirList = new ArrayList<File> (Arrays.asList(rootDir.listFiles()));
+			Iterator<File> e = dirList.iterator();
 			while (e.hasNext()) {
 				dirStringList.add(((File) e.next()).getName());
 			}
@@ -78,29 +77,18 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 
 		if (Intent.ACTION_SEND.equals(intent.getAction())) {
 			if (extras != null) {
-				Uri fileUri =
-				    (Uri) extras.getParcelable(Intent.
-							       EXTRA_STREAM);
-				fileArray.add(UriUtils.
-					      getFileFromUri(fileUri,
-							     this));
+				Uri fileUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
+				fileArray.add(UriUtils.getFileFromUri(fileUri, this));
 			} else {
 				tv.append(", extras == null");
 			}
 		} else if (Intent.ACTION_SEND_MULTIPLE.
 			   equals(intent.getAction())) {
 			if (extras != null) {
-				ArrayList < Uri > uriArray =
-				    extras.getParcelableArrayList
-				    (Intent.EXTRA_STREAM);
+				ArrayList<Uri> uriArray = extras.getParcelableArrayList(Intent.EXTRA_STREAM);
 				Iterator < Uri > e = uriArray.iterator();
 				while (e.hasNext()) {
-					fileArray.add(UriUtils.
-						      getFileFromUri((Uri)
-								     e.
-								     next
-								     (),
-								     this));
+					fileArray.add(UriUtils.getFileFromUri((Uri) e.next(), this));
 				}
 			} else {
 				tv.append(", extras == null");
@@ -125,33 +113,42 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		btnCancel.setOnClickListener(this);
 	}
 
-
+	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.ok:
-				String folderName = ((TextView)
-						     findViewById(R.
-								  id.destination)).
-				    getText().toString();
-				File destDir =
-				    new File(ORION_ROOT + folderName);
+				String folderName = ((TextView) findViewById(R.id.destination)).getText().toString();
+				File destDir = new File(ORION_ROOT + folderName);
 				destDir.mkdirs();
-				Log.i("gallorg",
-				      "destination is " + folderName);
+				Log.i("gallorg", "destination is " + folderName);
 
 				Iterator < File > e = fileArray.iterator();
 				while (e.hasNext()) {
 					File file = (File) e.next();
-					File dest =
-					    new File(ORION_ROOT +
-						     folderName + "/" +
-						     file.getName());
+					File dest = new File(ORION_ROOT + folderName + "/" + file.getName());
 					file.renameTo(dest);
-					Log.i("gallorg",
-					      "rename " +
-					      file.getAbsolutePath() +
-					      " to " +
-					      dest.getAbsolutePath());
+					Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
+				}
+
+				if (((CheckBox) findViewById(R.id.scanmedia)).isChecked()) {
+					Log.i("gallorg", "option scanmedia is checked.");
+					
+				}
+
+				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {
+					Log.i("gallorg", "option cleanup is checked.");
+					/*
+					File rootDir = new File(ORION_ROOT);
+					if (rootDir.exists() && rootDir.isDirectory()) {
+						ArrayList<File> dirList = new ArrayList<File> (Arrays.asList(rootDir.listFiles()));
+						Iterator<File> e = dirList.iterator();
+						while (e.hasNext()) {
+							//dirStringList.add(((File) e.next()).getName());
+							File currDir = (File) e.next();
+							//
+						}
+					}
+					*/
 				}
 
 				finish();
