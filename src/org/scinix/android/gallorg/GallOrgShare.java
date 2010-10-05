@@ -57,7 +57,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 
 		Collections.sort(dirStringList);
 		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
-		//destination.setText((nowFormatted.format(new Date())).toString());
+		destination.setText((nowFormatted.format(new Date())).toString());
 		dirStringList.add(0, ((nowFormatted.format(new Date())).toString()));
 
 		String[] dirArray = new String[dirStringList.size()];
@@ -168,7 +168,9 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			long id) {
 		// TODO Auto-generated method stub
 		//parent.getContext();
-		((TextView) findViewById(R.id.destination)).setText(parent.getItemAtPosition(position).toString());
+		if (!parent.getItemAtPosition(position).toString().equals(((TextView) findViewById(R.id.destination)).getText())) {
+			((TextView) findViewById(R.id.destination)).setText(parent.getItemAtPosition(position).toString());
+		}
 	}
 
 	@Override
