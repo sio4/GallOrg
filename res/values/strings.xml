@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, GallOrgInfo!</string>
+    <string name="hello">Hello, This is GallOrg, Gallery Organizer from scinix!
+\n\n
+With this, you can organize your Android gallery into Albums with meaningful name.
+Usage is simple. just use "Share" option from gallery.
+\n\n
+Contact to Author:
+\n 	@scinix twitter.com
+\n  	http://sio4.tistory.com
+    </string>
     <string name="app_name">GallOrg</string>
 </resources>
