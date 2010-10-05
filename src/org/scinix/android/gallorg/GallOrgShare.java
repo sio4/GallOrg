@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.scinix.android.utils.MediaScanner;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,7 +30,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 
 	private static final String ORION_ROOT = "/sdcard/Orion/GallOrg/";
 
-	private ArrayList < File > fileArray = new ArrayList < File > ();
+	private ArrayList<File> fileArray = new ArrayList<File> ();
+	private ArrayList<Uri> uriList = new ArrayList<Uri> ();
 	private Button btnMove;
 	private Button btnCancel;
 
@@ -43,6 +46,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		TextView amount = (TextView) findViewById(R.id.amount_of_files);
 		AutoCompleteTextView destination = (AutoCompleteTextView) findViewById(R.id.destination);
 		Spinner exists = (Spinner) findViewById(R.id.exists);
+		((CheckBox) findViewById(R.id.scanmedia)).setChecked(true);
 
 		/* get existing album(directory) list from ORION_ROOT */
 		File rootDir = new File(ORION_ROOT);
@@ -79,6 +83,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			if (extras != null) {
 				Uri fileUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
 				fileArray.add(UriUtils.getFileFromUri(fileUri, this));
+				uriList.add(fileUri);
 			} else {
 				tv.append(", extras == null");
 			}
@@ -86,6 +91,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			   equals(intent.getAction())) {
 			if (extras != null) {
 				ArrayList<Uri> uriArray = extras.getParcelableArrayList(Intent.EXTRA_STREAM);
+				uriList.addAll(uriArray);
 				Iterator < Uri > e = uriArray.iterator();
 				while (e.hasNext()) {
 					fileArray.add(UriUtils.getFileFromUri((Uri) e.next(), this));
@@ -122,17 +128,28 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				destDir.mkdirs();
 				Log.i("gallorg", "destination is " + folderName);
 
-				Iterator < File > e = fileArray.iterator();
+				String[] targetFiles = new String[fileArray.size()];
+				int i = 0;
+
+				Iterator<File> e = fileArray.iterator();
 				while (e.hasNext()) {
 					File file = (File) e.next();
 					File dest = new File(ORION_ROOT + folderName + "/" + file.getName());
 					file.renameTo(dest);
+					targetFiles[i++] = dest.getAbsolutePath();
 					Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
 				}
 
 				if (((CheckBox) findViewById(R.id.scanmedia)).isChecked()) {
 					Log.i("gallorg", "option scanmedia is checked.");
+					MediaScanner scanner = new MediaScanner(this);
+					scanner.scanFile(targetFiles);
 					
+					Iterator<Uri> eu = uriList.iterator();
+					while (eu.hasNext()) {
+						int count = getContentResolver().delete(eu.next(), null, null);
+						Log.i("gallorg", "provider: " + Integer.toString(count) + "record deleted.");
+					}
 				}
 
 				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {

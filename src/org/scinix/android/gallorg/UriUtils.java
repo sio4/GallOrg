@@ -11,7 +11,7 @@ public class UriUtils {
 	public static File getFileFromUri(Uri uri, Activity activity) {
 		String filePath = null;
 		String scheme = uri.getScheme();
-		 filePath = uri.getPath();
+		filePath = uri.getPath();
 		if (filePath != null && scheme != null
 		    && scheme.equals("file")) {
 			return new File(filePath);
