@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -14,11 +15,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class GallOrgShare extends Activity implements OnClickListener {
+public class GallOrgShare extends Activity implements OnClickListener, OnItemSelectedListener {
 
 	private static final String ORION_ROOT = "/sdcard/Orion/GallOrg/";
 
@@ -30,11 +35,15 @@ public class GallOrgShare extends Activity implements OnClickListener {
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		ArrayList <String> dirStringList = new ArrayList <String> ();
+
 		setContentView(R.layout.share);
 		TextView tv = (TextView) findViewById(R.id.filelist);
 		TextView amount = (TextView) findViewById(R.id.amount_of_files);
-		EditText destination = (EditText) findViewById(R.id.destination);
+		AutoCompleteTextView destination = (AutoCompleteTextView) findViewById(R.id.destination);
+		Spinner exists = (Spinner) findViewById(R.id.exists);
 
+		/* get existing album(directory) list from ORION_ROOT */
 		File rootDir = new File(ORION_ROOT);
 		if (rootDir.exists() && rootDir.isDirectory()) {
 			ArrayList < File > dirList =
@@ -42,11 +51,27 @@ public class GallOrgShare extends Activity implements OnClickListener {
 			    (Arrays.asList(rootDir.listFiles()));
 			Iterator < File > e = dirList.iterator();
 			while (e.hasNext()) {
-				Log.i("gallorg",
-				      "Exist Album '" +
-				      ((File) e.next()).getName() +
-				      "' found.");
-		}}
+				dirStringList.add(((File) e.next()).getName());
+			}
+		}
+
+		Collections.sort(dirStringList);
+		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
+		//destination.setText((nowFormatted.format(new Date())).toString());
+		dirStringList.add(0, ((nowFormatted.format(new Date())).toString()));
+
+		String[] dirArray = new String[dirStringList.size()];
+		dirStringList.toArray(dirArray);
+		Log.i("gallorg", "existing dirs(array): " + Arrays.asList(dirArray).toString());
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line, dirArray);
+		destination.setAdapter(adapter);
+		ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, dirArray);
+		exists.setAdapter(adapterSpinner);
+
+		exists.setOnItemSelectedListener(this);
 
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
@@ -90,9 +115,6 @@ public class GallOrgShare extends Activity implements OnClickListener {
 			}
 			tv.append("\n");
 		}
-
-		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
-		destination.setText((nowFormatted.format(new Date())).toString());
 
 		amount.setText(Integer.toString(fileArray.size()));
 
@@ -141,6 +163,16 @@ public class GallOrgShare extends Activity implements OnClickListener {
 		}
 	}
 
-	public void onItemSelected(View v) {
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		// TODO Auto-generated method stub
+		//parent.getContext();
+		((TextView) findViewById(R.id.destination)).setText(parent.getItemAtPosition(position).toString());
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// TODO Auto-generated method stub
 	}
 }

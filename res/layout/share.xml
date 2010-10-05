@@ -23,9 +23,8 @@
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_margin="5px"
 			android:text="organized into" android:id="@+id/organized_into" />
-		<EditText android:layout_height="wrap_content"
-			android:layout_width="fill_parent" android:id="@+id/destination"
-			android:text="New" />
+		<AutoCompleteTextView android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:id="@+id/destination" />
 	</TableRow>
 	<TableRow android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/recentLayout">
