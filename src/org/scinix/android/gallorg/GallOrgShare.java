@@ -172,7 +172,11 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				break;
 
 			case R.id.cancel:
-				finish();
+				if (((TextView) findViewById(R.id.destination)).getText().toString().equals("About...")) {
+					setContentView(R.layout.about);
+				} else {
+					finish();
+				}
 				break;
 		}
 	}
