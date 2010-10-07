@@ -128,27 +128,42 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				destDir.mkdirs();
 				Log.i("gallorg", "destination is " + folderName);
 
-				String[] targetFiles = new String[fileArray.size()];
-				int i = 0;
+				String[] filesToScan = new String[fileArray.size()];
+				int numOfFilesToScan = 0;
 
 				Iterator<File> e = fileArray.iterator();
 				while (e.hasNext()) {
 					File file = (File) e.next();
 					File dest = new File(ORION_ROOT + folderName + "/" + file.getName());
-					file.renameTo(dest);
-					targetFiles[i++] = dest.getAbsolutePath();
+
 					Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
+					if (file.renameTo(dest)) {
+						Log.i("gallorg", "renameTo returns true.");
+						filesToScan[numOfFilesToScan++] = dest.getAbsolutePath();
+					} else {
+						Log.e("gallorg", "renameTo returns false.");
+						/* FIXME: some error message here! */
+					}
 				}
 
 				if (((CheckBox) findViewById(R.id.scanmedia)).isChecked()) {
 					Log.i("gallorg", "option scanmedia is checked.");
-					MediaScanner scanner = new MediaScanner(this);
-					scanner.scanFile(targetFiles);
-					
+					if (numOfFilesToScan > 0) {
+						Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
+						MediaScanner scanner = new MediaScanner(this);
+						scanner.scanFile(filesToScan);
+					}
+
 					Iterator<Uri> eu = uriList.iterator();
 					while (eu.hasNext()) {
-						int count = getContentResolver().delete(eu.next(), null, null);
-						Log.i("gallorg", "provider: " + Integer.toString(count) + "record deleted.");
+						Uri fileUri = eu.next();
+						File file = UriUtils.getFileFromUri(fileUri, this);
+						if (file.exists() == false) {
+							int count = getContentResolver().delete(fileUri, null, null);
+							Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
+						} else {
+							Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
+						}
 					}
 				}
 
