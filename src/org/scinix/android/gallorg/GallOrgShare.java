@@ -46,6 +46,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		TextView amount = (TextView) findViewById(R.id.amount_of_files);
 		AutoCompleteTextView destination = (AutoCompleteTextView) findViewById(R.id.destination);
 		Spinner exists = (Spinner) findViewById(R.id.exists);
+
+		/* set default options */
 		((CheckBox) findViewById(R.id.scanmedia)).setChecked(true);
 
 		/* get existing album(directory) list from ORION_ROOT */
@@ -58,11 +60,13 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			}
 		}
 
+		/* sort and insert default destinations. */
 		Collections.sort(dirStringList);
 		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
 		destination.setText((nowFormatted.format(new Date())).toString());
 		dirStringList.add(0, ((nowFormatted.format(new Date())).toString()));
 
+		/* make array and adapter for spinner and auto-completion. */
 		String[] dirArray = new String[dirStringList.size()];
 		dirStringList.toArray(dirArray);
 		Log.i("gallorg", "existing dirs(array): " + Arrays.asList(dirArray).toString());
@@ -73,9 +77,9 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, dirArray);
 		exists.setAdapter(adapterSpinner);
-
 		exists.setOnItemSelectedListener(this);
 
+		/* get selected files and add it to src list (counting and debugging purpose.) */
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 
@@ -101,6 +105,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			}
 		}
 
+		/* file list for debugging. */
 		Iterator < File > e = fileArray.iterator();
 		while (e.hasNext()) {
 			File file = (File) e.next();
@@ -110,8 +115,10 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			tv.append("\n");
 		}
 
+		/* display amount of selected files. */
 		amount.setText(Integer.toString(fileArray.size()));
 
+		/* button binding. */
 		btnMove = (Button) findViewById(R.id.ok);
 		btnCancel = (Button) findViewById(R.id.cancel);
 
@@ -131,6 +138,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				String[] filesToScan = new String[fileArray.size()];
 				int numOfFilesToScan = 0;
 
+				/* moving files to destination. */
 				Iterator<File> e = fileArray.iterator();
 				while (e.hasNext()) {
 					File file = (File) e.next();
@@ -146,6 +154,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 					}
 				}
 
+				/* add and remove from content provider. (media scanning) */
 				if (((CheckBox) findViewById(R.id.scanmedia)).isChecked()) {
 					Log.i("gallorg", "option scanmedia is checked.");
 					if (numOfFilesToScan > 0) {
@@ -167,6 +176,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 					}
 				}
 
+				/* remove empty folders from ROOT. */
 				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {
 					Log.i("gallorg", "option cleanup is checked.");
 					/*
