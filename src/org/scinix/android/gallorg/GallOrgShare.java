@@ -35,6 +35,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 	private Button btnMove;
 	private Button btnCancel;
 
+	private String default_destination = new String();
+	private boolean first_time = true;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,17 +65,22 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		/* sort and insert default destinations. */
 		Collections.sort(dirStringList);
 		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
-		destination.setText((nowFormatted.format(new Date())).toString());
+		default_destination = nowFormatted.format(new Date()).toString();
+		destination.setText(default_destination);
+		/* remove default folder from 'existing album list'.
 		dirStringList.add(0, ((nowFormatted.format(new Date())).toString()));
+		*/
 
 		/* make array and adapter for spinner and auto-completion. */
 		String[] dirArray = new String[dirStringList.size()];
 		dirStringList.toArray(dirArray);
 		Log.i("gallorg", "existing dirs(array): " + Arrays.asList(dirArray).toString());
 
+		/* disabling drop-down auto-completion.
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, dirArray);
 		destination.setAdapter(adapter);
+		*/
 		ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, dirArray);
 		exists.setAdapter(adapterSpinner);
@@ -210,10 +217,12 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		// TODO Auto-generated method stub
-		//parent.getContext();
-		if (!parent.getItemAtPosition(position).toString().equals(((TextView) findViewById(R.id.destination)).getText())) {
-			((TextView) findViewById(R.id.destination)).setText(parent.getItemAtPosition(position).toString());
+		if (first_time) {
+			// XXX DIRTY! how can i handle it with more gentle way?
+			first_time = false;
+			return;
 		}
+		((TextView) findViewById(R.id.destination)).setText(parent.getItemAtPosition(position).toString());
 	}
 
 	@Override
