@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,9 +68,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		SimpleDateFormat nowFormatted = new SimpleDateFormat("yyyyMMdd");
 		default_destination = nowFormatted.format(new Date()).toString();
 		destination.setText(default_destination);
-		/* remove default folder from 'existing album list'.
-		dirStringList.add(0, ((nowFormatted.format(new Date())).toString()));
-		*/
+		/* remove default folder from 'existing album list'. but Camera */
+		dirStringList.add(0, "<Camera>");
 
 		/* make array and adapter for spinner and auto-completion. */
 		String[] dirArray = new String[dirStringList.size()];
@@ -138,9 +138,15 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		switch (v.getId()) {
 			case R.id.ok:
 				String folderName = ((TextView) findViewById(R.id.destination)).getText().toString();
-				File destDir = new File(ORION_ROOT + folderName);
-				destDir.mkdirs();
-				Log.i("gallorg", "destination is " + folderName);
+				File destDir;
+				if (folderName.equals("<Camera>")) {
+					destDir = new File(Environment.getExternalStorageDirectory().toString() + "/DCIM/Camera");
+				} else {
+					destDir = new File(ORION_ROOT + folderName);
+					destDir.mkdirs();
+				}
+				Log.i("gallorg", "destDir is " + destDir.getAbsolutePath());
+				/* FIXME: assert destination != parent dir of selected files. */
 
 				String[] filesToScan = new String[fileArray.size()];
 				int numOfFilesToScan = 0;
@@ -149,7 +155,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				Iterator<File> e = fileArray.iterator();
 				while (e.hasNext()) {
 					File file = (File) e.next();
-					File dest = new File(ORION_ROOT + folderName + "/" + file.getName());
+					File dest = new File(destDir.getAbsolutePath() + "/" + file.getName());
 
 					Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
 					if (file.renameTo(dest)) {
