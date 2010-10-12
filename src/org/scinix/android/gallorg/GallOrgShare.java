@@ -192,18 +192,20 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				/* remove empty folders from ROOT. */
 				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {
 					Log.i("gallorg", "option cleanup is checked.");
-					/*
 					File rootDir = new File(ORION_ROOT);
 					if (rootDir.exists() && rootDir.isDirectory()) {
 						ArrayList<File> dirList = new ArrayList<File> (Arrays.asList(rootDir.listFiles()));
-						Iterator<File> e = dirList.iterator();
-						while (e.hasNext()) {
-							//dirStringList.add(((File) e.next()).getName());
-							File currDir = (File) e.next();
-							//
+						Iterator<File> el = dirList.iterator();
+						while (el.hasNext()) {
+							File currDir = (File) el.next();
+							if (currDir.isDirectory() && (currDir.list().length == 0)) {
+								Log.d("gallorg", "subdir '" + currDir.getName() + "' is empty. remove it.");
+								if (!currDir.delete()) {
+									Log.e("gallorg", "oops! '" + currDir.getName() + "' is empty but cannot delete it!");
+								}
+							}
 						}
 					}
-					*/
 				}
 
 				finish();
