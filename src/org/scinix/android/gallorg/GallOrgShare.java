@@ -121,6 +121,8 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 			}
 			tv.append("\n");
 		}
+		Log.d("gallorg", "selected content list: " + uriList.toString());
+		Log.d("gallorg", "selected file list: " + fileArray.toString());
 
 		/* display amount of selected files. */
 		amount.setText(Integer.toString(fileArray.size()));
@@ -176,14 +178,20 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 						scanner.scanFile(filesToScan);
 					}
 
+					/* remove from ContentProvider */
 					Iterator<Uri> eu = uriList.iterator();
 					while (eu.hasNext()) {
 						Uri fileUri = eu.next();
 						File file = UriUtils.getFileFromUri(fileUri, this);
-						if (file.exists() == false) {
+						Log.d("gallorg", "uri: " + fileUri.toString());
+						if (file.exists() == false && fileUri.getScheme().equals("content")) {
 							int count = getContentResolver().delete(fileUri, null, null);
 							Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
+						} else if (!fileUri.getScheme().equals("content")) {
+							Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
+							/* XXX how can i alert/broadcast file deletion to parent program? */
 						} else {
+							/* maybe on case of ERROR */
 							Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
 						}
 					}
