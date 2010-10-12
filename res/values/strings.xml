@@ -9,8 +9,14 @@ Usage is simple. just use "Share" option from gallery.
 \n\t @scinix twitter.com
 	</string>
 	<string name="changelogs">ChangeLogs:
+\n * version 1.0.2
+\n\t - auto-completion bug fix by disabling.
+\n\t - add special destination \"back to the Camera\".
+\n\t - add feature \"empty album clean-up\".
+\n\t - restrict to \"image/*\" and \"video/*\" for now.
+\n\t - now working with File Manager too.
 \n * version 1.0.1
-\n\t - bugfix: avoid losing files while move across filesystem.
+\n\t - fix for losing file while move across filesystem.
     </string>
     <string name="app_name">GallOrg</string>
 	<string name="the_end">...end in the end,
