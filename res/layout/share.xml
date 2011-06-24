@@ -8,13 +8,13 @@
 		android:layout_height="wrap_content" android:layout_margin="5px"
 		android:id="@+id/sourceLayout">
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Selected Files("
+			android:layout_height="wrap_content" android:text="@string/selected_files"
 			android:id="@+id/selected_files" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="0"
 			android:id="@+id/amount_of_files" />
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text=") will be"
+			android:layout_height="wrap_content" android:text="@string/will_be"
 			android:id="@+id/will_be" />
 	</LinearLayout>
 
@@ -22,7 +22,7 @@
 		android:layout_width="fill_parent" android:id="@+id/destLayout">
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_margin="5px"
-			android:text="organized into" android:id="@+id/organized_into" />
+			android:text="@string/organized_into" android:id="@+id/organized_into" />
 		<AutoCompleteTextView android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:id="@+id/destination" />
 	</TableRow>
@@ -30,28 +30,27 @@
 		android:layout_width="fill_parent" android:id="@+id/recentLayout">
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_gravity="center"
-			android:layout_margin="5px" android:text="or" android:id="@+id/or" />
+			android:layout_margin="5px" android:text="@string/or" android:id="@+id/or" />
 		<Spinner android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:id="@+id/exists" />
 	</TableRow>
 	<TableRow android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/optionLayout">
-		<CheckBox android:layout_height="wrap_content" android:text="Scan Media"
-			android:id="@+id/scanmedia" android:layout_width="wrap_content" />
-		<CheckBox android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/cleanup"
-			android:text="Cleanup Empty" />
+		<CheckBox android:layout_height="wrap_content" android:text="@string/copy"
+			android:id="@+id/copy" android:layout_width="wrap_content" />
+		<CheckBox android:layout_width="wrap_content" android:text="@string/cleanup_empty"
+			android:id="@+id/cleanup" android:layout_height="wrap_content" />
 	</TableRow>
 	<LinearLayout android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/actionLayout">
-		<Button android:layout_height="wrap_content" android:text="Cancel"
+		<Button android:layout_height="wrap_content" android:text="@string/cancel"
 			android:id="@+id/cancel" android:layout_width="wrap_content" />
-		<Button android:layout_height="wrap_content" android:id="@+id/ok"
-			android:text="Move" android:layout_width="fill_parent" />
+		<Button android:layout_height="wrap_content" android:text="@string/ok"
+			android:id="@+id/ok" android:layout_width="fill_parent" />
 	</LinearLayout>
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/details"
-		android:text="Selected Files :" android:layout_margin="5px" />
+		android:text="@string/details" android:layout_margin="5px" />
 	<ScrollView android:layout_width="fill_parent"
 		android:layout_margin="5px" android:layout_height="wrap_content"
 		android:id="@+id/detailsLayout">

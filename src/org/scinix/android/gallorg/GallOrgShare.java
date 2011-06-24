@@ -51,7 +51,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		Spinner exists = (Spinner) findViewById(R.id.exists);
 
 		/* set default options */
-		((CheckBox) findViewById(R.id.scanmedia)).setChecked(true);
+		//((CheckBox) findViewById(R.id.copy)).setChecked(false);
 
 		/* get existing album(directory) list from ORION_ROOT */
 		File rootDir = new File(ORION_ROOT);
@@ -170,30 +170,31 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				}
 
 				/* add and remove from content provider. (media scanning) */
-				if (((CheckBox) findViewById(R.id.scanmedia)).isChecked()) {
-					Log.i("gallorg", "option scanmedia is checked.");
-					if (numOfFilesToScan > 0) {
-						Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
-						MediaScanner scanner = new MediaScanner(this);
-						scanner.scanFile(filesToScan);
-					}
+				if (((CheckBox) findViewById(R.id.copy)).isChecked()) {
+				}
 
-					/* remove from ContentProvider */
-					Iterator<Uri> eu = uriList.iterator();
-					while (eu.hasNext()) {
-						Uri fileUri = eu.next();
-						File file = UriUtils.getFileFromUri(fileUri, this);
-						Log.d("gallorg", "uri: " + fileUri.toString());
-						if (file.exists() == false && fileUri.getScheme().equals("content")) {
-							int count = getContentResolver().delete(fileUri, null, null);
-							Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
-						} else if (!fileUri.getScheme().equals("content")) {
-							Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
-							/* XXX how can i alert/broadcast file deletion to parent program? */
-						} else {
-							/* maybe on case of ERROR */
-							Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
-						}
+				Log.i("gallorg", "media scanning...");
+				if (numOfFilesToScan > 0) {
+					Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
+					MediaScanner scanner = new MediaScanner(this);
+					scanner.scanFile(filesToScan);
+				}
+
+				/* remove from ContentProvider */
+				Iterator<Uri> eu = uriList.iterator();
+				while (eu.hasNext()) {
+					Uri fileUri = eu.next();
+					File file = UriUtils.getFileFromUri(fileUri, this);
+					Log.d("gallorg", "uri: " + fileUri.toString());
+					if (file.exists() == false && fileUri.getScheme().equals("content")) {
+						int count = getContentResolver().delete(fileUri, null, null);
+						Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
+					} else if (!fileUri.getScheme().equals("content")) {
+						Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
+						/* XXX how can i alert/broadcast file deletion to parent program? */
+					} else {
+						/* maybe on case of ERROR */
+						Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
 					}
 				}
 
