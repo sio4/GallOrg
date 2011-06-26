@@ -27,13 +27,14 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 	private Button btnOK;
 	private Button btnTouch;
 
-	private File target_file;
-	private Date target_date;
+	private File target_file = null;
+	private Date target_date = null;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photo_info);
-		TextView tv = (TextView) findViewById(R.id.textView1);
+		TextView fi = (TextView) findViewById(R.id.file_info);
+		TextView ei = (TextView) findViewById(R.id.exif_info);
 
 		/* get selected files and add it to src list (counting and debugging purpose.) */
 		Intent intent = getIntent();
@@ -45,36 +46,40 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 				fileArray.add(UriUtils.getFileFromUri(fileUri, this));
 				uriList.add(fileUri);
 			} else {
-				tv.append(", extras == null");
+				Toast.makeText(this, "Error! extras == null", Toast.LENGTH_SHORT).show();
+				finish();
 			}
 		}
 
+		SimpleDateFormat dformat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		/* file list for debugging. */
 		Iterator < File > e = fileArray.iterator();
 		while (e.hasNext()) {
 			File file = (File) e.next();
 			if (file.exists() && file.isFile()) {
-				tv.append("* " + file.getName() + "\n");
-				Date fdate = new Date(file.lastModified());
-				tv.append("File Date: " + fdate.toString() + "\n");
+				fi.append("\n" + file.getName());
+				fi.append("\n" + file.length()/1024 + "KB");
+				fi.append("\n" + dformat.format(new Date(file.lastModified())));
 				target_file = file;
 				try {
 					ExifInterface exif = new ExifInterface(file.getAbsolutePath());
-					tv.append("Date: " + exif.getAttribute(ExifInterface.TAG_DATETIME) + "\n");
-					tv.append("Flash: " + exif.getAttribute(ExifInterface.TAG_FLASH) + "\n");
-					tv.append("Lat.: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE) + "\n");
-					tv.append("Lat. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF) + "\n");
-					tv.append("Long.: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) + "\n");
-					tv.append("Long. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF) + "\n");
-					tv.append("Width: " + exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) + "\n");
-					tv.append("Length: " + exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) + "\n");
-					tv.append("Make: " + exif.getAttribute(ExifInterface.TAG_MAKE) + "\n");
-					tv.append("Model: " + exif.getAttribute(ExifInterface.TAG_MODEL) + "\n");
-					tv.append("Orientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION) + "\n");
-					tv.append("White Balance: " + exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE) + "\n");
+					ei.append("\n\tDate: " + exif.getAttribute(ExifInterface.TAG_DATETIME));
+					ei.append("\n\tFlash: " + exif.getAttribute(ExifInterface.TAG_FLASH));
+					ei.append("\n\tLat.: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
+					ei.append("\n\tLat. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF));
+					ei.append("\n\tLong.: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+					ei.append("\n\tLong. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
+					ei.append("\n\tWidth: " + exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH));
+					ei.append("\n\tLength: " + exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
+					ei.append("\n\tMake: " + exif.getAttribute(ExifInterface.TAG_MAKE));
+					ei.append("\n\tModel: " + exif.getAttribute(ExifInterface.TAG_MODEL));
+					ei.append("\n\tOrientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION));
+					ei.append("\n\tWhite Balance: " + exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE));
 
-					SimpleDateFormat exifDateFormat = new SimpleDateFormat("yyy:MM:dd HH:mm:ss");
-					target_date = exifDateFormat.parse(exif.getAttribute(ExifInterface.TAG_DATETIME));
+					if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
+						SimpleDateFormat exifDateFormat = new SimpleDateFormat("yyy:MM:dd HH:mm:ss");
+						target_date = exifDateFormat.parse(exif.getAttribute(ExifInterface.TAG_DATETIME));
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 					Toast.makeText(this, "IO Error!", Toast.LENGTH_SHORT).show();
@@ -83,7 +88,6 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 					Toast.makeText(this, "Parse Error!", Toast.LENGTH_SHORT).show();
 				}
 			}
-			tv.append("\n");
 		}
 
 		/* button binding. */
@@ -91,6 +95,9 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 		btnTouch = (Button) findViewById(R.id.btn_touch);
 		btnOK.setOnClickListener(this);
 		btnTouch.setOnClickListener(this);
+		if (target_date == null) {
+			btnTouch.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -108,14 +115,14 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 				while (eu.hasNext()) {
 					Uri fileUri = eu.next();
 					getContentResolver().notifyChange(fileUri, null);
-					/*
-					getContentResolver().delete(fileUri, null, null);
+					/* any smart and perfect... right way?
+					//XXX getContentResolver().delete(fileUri, null, null);
 					MediaScanner scanner = new MediaScanner(this);
-					canner.scanFile(target_file.getAbsolutePath());
+					scanner.scanFile(target_file.getAbsolutePath());
 					*/
 				}
+				finish();
 				break;
 		}
 	}
-
 }

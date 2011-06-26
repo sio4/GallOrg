@@ -2,7 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<TextView android:text="" android:id="@+id/textView1"
+	<TableRow
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_margin="10px"
+		android:orientation="horizontal"
+		android:gravity="center"
+		android:clickable="true"
+		android:id="@+id/images">
+		<ImageView
+			android:id="@+id/ImageView01"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:adjustViewBounds="true"
+			android:scaleType="fitXY"
+			android:background="#ffffff"
+			android:padding="3px" android:layout_margin="2px"
+			android:maxWidth="90dip"
+			android:maxHeight="90dip"
+			android:src="@drawable/about_1" android:tint="#880000ff" />
+		<TextView android:text="File Info: " android:id="@+id/file_info"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="2pt" />
+	</TableRow>
+	<TextView android:text="Exif Info: " android:id="@+id/exif_info"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
 		android:padding="2pt" android:minWidth="320px" />
 	<LinearLayout android:id="@+id/buttons"
