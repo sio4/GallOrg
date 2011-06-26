@@ -137,6 +137,9 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 
 	@Override
 	public void onClick(View v) {
+		boolean opt_cleanup = false;
+		boolean opt_copy = false;
+		
 		switch (v.getId()) {
 			case R.id.ok:
 				String folderName = ((TextView) findViewById(R.id.destination)).getText().toString();
@@ -150,84 +153,117 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				Log.i("gallorg", "destDir is " + destDir.getAbsolutePath());
 				/* FIXME: assert destination != parent dir of selected files. */
 
-				String[] filesToScan = new String[fileArray.size()];
-				int numOfFilesToScan = 0;
+				if (((CheckBox) findViewById(R.id.copy)).isChecked()) {
+					opt_copy = true;
+				}
+				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {
+					opt_cleanup = true;
+				}
 
 				/* moving files to destination. */
-				Iterator<File> e = fileArray.iterator();
-				while (e.hasNext()) {
-					File file = (File) e.next();
-					File dest = new File(destDir.getAbsolutePath() + "/" + file.getName());
-
-					Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
-					if (file.renameTo(dest)) {
-						Log.i("gallorg", "renameTo returns true.");
-						filesToScan[numOfFilesToScan++] = dest.getAbsolutePath();
-					} else {
-						Log.e("gallorg", "renameTo returns false.");
-						/* FIXME: some error message here! */
-					}
+				if (opt_copy) {
+					//copyFiles(destDir);
+				} else {
+					moveFiles(destDir);
 				}
 
 				/* add and remove from content provider. (media scanning) */
-				if (((CheckBox) findViewById(R.id.copy)).isChecked()) {
-				}
-
-				Log.i("gallorg", "media scanning...");
-				if (numOfFilesToScan > 0) {
-					Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
-					MediaScanner scanner = new MediaScanner(this);
-					scanner.scanFile(filesToScan);
-				}
 
 				/* remove from ContentProvider */
-				Iterator<Uri> eu = uriList.iterator();
-				while (eu.hasNext()) {
-					Uri fileUri = eu.next();
-					File file = UriUtils.getFileFromUri(fileUri, this);
-					Log.d("gallorg", "uri: " + fileUri.toString());
-					if (file.exists() == false && fileUri.getScheme().equals("content")) {
-						int count = getContentResolver().delete(fileUri, null, null);
-						Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
-					} else if (!fileUri.getScheme().equals("content")) {
-						Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
-						/* XXX how can i alert/broadcast file deletion to parent program? */
-					} else {
-						/* maybe on case of ERROR */
-						Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
-					}
-				}
+				updateContentProvider();
 
 				/* remove empty folders from ROOT. */
-				if (((CheckBox) findViewById(R.id.cleanup)).isChecked()) {
-					Log.i("gallorg", "option cleanup is checked.");
-					File rootDir = new File(ORION_ROOT);
-					if (rootDir.exists() && rootDir.isDirectory()) {
-						ArrayList<File> dirList = new ArrayList<File> (Arrays.asList(rootDir.listFiles()));
-						Iterator<File> el = dirList.iterator();
-						while (el.hasNext()) {
-							File currDir = (File) el.next();
-							if (currDir.isDirectory() && (currDir.list().length == 0)) {
-								Log.d("gallorg", "subdir '" + currDir.getName() + "' is empty. remove it.");
-								if (!currDir.delete()) {
-									Log.e("gallorg", "oops! '" + currDir.getName() + "' is empty but cannot delete it!");
-								}
-							}
-						}
+				if (opt_cleanup) {
+					if (false == cleanupEmpty()) {
+						Log.e("gallorg", "something wrong.");
 					}
 				}
-
 				finish();
 				break;
-
 			case R.id.cancel:
 				if (((TextView) findViewById(R.id.destination)).getText().toString().equals("About...")) {
-					setContentView(R.layout.about);
+					displayAbout();
 				} else {
 					finish();
 				}
 				break;
 		}
+	}
+
+	private boolean moveFiles(File destDir) {
+		String[] filesToScan = new String[fileArray.size()];
+		int numOfFilesToScan = 0;
+
+		Iterator<File> e = fileArray.iterator();
+		while (e.hasNext()) {
+			File file = (File) e.next();
+			File dest = new File(destDir.getAbsolutePath() + "/" + file.getName());
+
+			Log.i("gallorg", "rename " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
+			if (file.renameTo(dest)) {
+				Log.i("gallorg", "renameTo returns true.");
+				filesToScan[numOfFilesToScan++] = dest.getAbsolutePath();
+			} else {
+				Log.e("gallorg", "renameTo returns false.");
+				/* FIXME: some error message here! */
+			}
+		}
+
+		Log.i("gallorg", "media scanning...");
+		if (numOfFilesToScan > 0) {
+			Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
+			MediaScanner scanner = new MediaScanner(this);
+			scanner.scanFile(filesToScan);
+		}
+		return true;
+	}
+
+	private boolean updateContentProvider() {
+		/* remove from ContentProvider */
+		Iterator<Uri> eu = uriList.iterator();
+		while (eu.hasNext()) {
+			Uri fileUri = eu.next();
+			File file = UriUtils.getFileFromUri(fileUri, this);
+			Log.d("gallorg", "uri: " + fileUri.toString());
+			if (file.exists() == false && fileUri.getScheme().equals("content")) {
+				int count = getContentResolver().delete(fileUri, null, null);
+				Log.i("gallorg", "deleted " + Integer.toString(count) + " record(s) from content provider.");
+			} else if (!fileUri.getScheme().equals("content")) {
+				Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
+				/* XXX how can i alert/broadcast file deletion to parent program? */
+			} else {
+				/* maybe on case of ERROR */
+				Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
+			}
+		}
+		return true;
+	}
+
+	private boolean cleanupEmpty() {
+		boolean ret = true;
+		Log.i("gallorg", "cleanup empty folders...");
+		File rootDir = new File(ORION_ROOT);
+		if (rootDir.exists() && rootDir.isDirectory()) {
+			ArrayList<File> dirList = new ArrayList<File> (Arrays.asList(rootDir.listFiles()));
+			Iterator<File> el = dirList.iterator();
+			while (el.hasNext()) {
+				File currDir = (File) el.next();
+				if (currDir.isDirectory() && (currDir.list().length == 0)) {
+					Log.d("gallorg", "subdir '" + currDir.getName() + "' is empty. remove it.");
+					if (!currDir.delete()) {
+						Log.e("gallorg", "oops! '" + currDir.getName() + "' is empty but cannot delete it!");
+						ret = false;
+					}
+				}
+			}
+		}
+		Log.i("gallorg", "cleaning done.");
+		return ret;
+	}
+
+	private void displayAbout() {
+		setContentView(R.layout.about);
+		return;
 	}
 
 	@Override
