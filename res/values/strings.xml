@@ -19,6 +19,8 @@ Usage is simple. just use "Share" option from gallery.
 \n\t - fix for losing file while move across filesystem.
     </string>
     <string name="app_name">GallOrg</string>
+	<string name="photo_info">GallOrg Info</string>
+
 	<string name="the_end">...end in the end,
 \nthe love you take is equal to the love you make.
 	</string>
@@ -33,4 +35,6 @@ Usage is simple. just use "Share" option from gallery.
 	<string name="ok">OK</string>
 	<string name="details">Selection Details:</string>
 
+	<string name="touch">Touch</string>
+	<string name="msg_touch">Touch with Exif Date</string>
 </resources>
