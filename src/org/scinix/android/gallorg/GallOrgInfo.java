@@ -10,12 +10,14 @@ import java.util.Iterator;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,8 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 		setContentView(R.layout.photo_info);
 		TextView fi = (TextView) findViewById(R.id.file_info);
 		TextView ei = (TextView) findViewById(R.id.exif_info);
+
+		ImageView imgThumb;
 
 		/* get selected files and add it to src list (counting and debugging purpose.) */
 		Intent intent = getIntent();
@@ -64,17 +68,36 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 				try {
 					ExifInterface exif = new ExifInterface(file.getAbsolutePath());
 					ei.append("\n\tDate: " + exif.getAttribute(ExifInterface.TAG_DATETIME));
+					ei.append("\n\tFocal Length: " + exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
 					ei.append("\n\tFlash: " + exif.getAttribute(ExifInterface.TAG_FLASH));
-					ei.append("\n\tLat.: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
-					ei.append("\n\tLat. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF));
-					ei.append("\n\tLong.: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
-					ei.append("\n\tLong. Ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
-					ei.append("\n\tWidth: " + exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH));
-					ei.append("\n\tLength: " + exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
+					if (exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE) != null
+							&& exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) != null) {
+						ei.append("\n\tLocation: "
+								+ exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
+								+ exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+								.replaceFirst("/1,", ".").replaceFirst("/1,", "\'").replaceFirst("/100", "\"")
+								+ ", "
+								+ exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+								+ exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+								.replaceFirst("/1,", ".").replaceFirst("/1,", "\'").replaceFirst("/100", "\""));
+					}
+					ei.append("\n\tGPS Date: " + exif.getAttribute(ExifInterface.TAG_GPS_DATESTAMP)
+							+ " " + exif.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP));
+					ei.append("\n\tGPS Method: " + exif.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD));
+					ei.append("\n\tSize: " + exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
+							+ "x" + exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
 					ei.append("\n\tMake: " + exif.getAttribute(ExifInterface.TAG_MAKE));
 					ei.append("\n\tModel: " + exif.getAttribute(ExifInterface.TAG_MODEL));
 					ei.append("\n\tOrientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION));
 					ei.append("\n\tWhite Balance: " + exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE));
+					if (exif.hasThumbnail()) {
+						ei.append("\n\thas thumbnail.");
+						imgThumb = (ImageView) findViewById(R.id.thumbnail);
+						byte[] thumb = exif.getThumbnail();
+						imgThumb.setImageBitmap(BitmapFactory.decodeByteArray(thumb, 0, thumb.length));
+					} else {
+						ei.append("\n\thas no thumbnail.");
+					}
 
 					if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
 						SimpleDateFormat exifDateFormat = new SimpleDateFormat("yyy:MM:dd HH:mm:ss");

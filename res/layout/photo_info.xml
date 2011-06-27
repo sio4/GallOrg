@@ -11,7 +11,7 @@
 		android:clickable="true"
 		android:id="@+id/images">
 		<ImageView
-			android:id="@+id/ImageView01"
+			android:id="@+id/thumbnail"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
 			android:padding="3px" android:layout_margin="2px"
 			android:maxWidth="90dip"
 			android:maxHeight="90dip"
-			android:src="@drawable/about_1" android:tint="#880000ff" />
+			android:src="@drawable/icon" android:tint="#22000000" />
 		<TextView android:text="File Info: " android:id="@+id/file_info"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
