@@ -1,6 +1,8 @@
 package org.scinix.android.gallorg;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +27,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class GallOrgShare extends Activity implements OnClickListener, OnItemSelectedListener {
 
 	private static final String ORION_ROOT = "/sdcard/Orion/GallOrg/";
+	private static final int COPY_BUFFER_SIZE = 32 * 1024;
 
 	private ArrayList<File> fileArray = new ArrayList<File> ();
 	private ArrayList<Uri> uriList = new ArrayList<Uri> ();
@@ -139,6 +143,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 	public void onClick(View v) {
 		boolean opt_cleanup = false;
 		boolean opt_copy = false;
+		boolean abort = false;
 		
 		switch (v.getId()) {
 			case R.id.ok:
@@ -160,17 +165,31 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 					opt_cleanup = true;
 				}
 
-				/* moving files to destination. */
-				if (opt_copy) {
-					//copyFiles(destDir);
-				} else {
-					moveFiles(destDir);
+				/* FIXME we need SMART renamer but now... */
+				Iterator<File> eTest = fileArray.iterator();
+				while (eTest.hasNext()) {
+					File file = (File) eTest.next();
+					File dest = new File(destDir.getAbsolutePath() + "/" + file.getName());
+					if (dest.exists()) {
+						Log.i("gallorg", "same named file exists on destination. Abort!");
+						Toast.makeText(this, file.getName() + " exists. aborted!",
+								Toast.LENGTH_SHORT).show();
+						/* no more action, abort here. */
+						abort = true; /* XXX dirty. */
+						break;
+					}
 				}
 
-				/* add and remove from content provider. (media scanning) */
-
-				/* remove from ContentProvider */
-				updateContentProvider();
+				if (!abort) { /* XXX dirty. but how can i do this without it? /*
+					/* Action!!! */
+					if (opt_copy) {
+						copyFiles(destDir);
+					} else {
+						moveFiles(destDir);
+					}
+					/* add and remove from content provider. (media scanning) */
+					updateContentProvider();
+				}
 
 				/* remove empty folders from ROOT. */
 				if (opt_cleanup) {
@@ -218,6 +237,59 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 		return true;
 	}
 
+	private boolean copyFiles(File destDir) {
+		String[] filesToScan = new String[fileArray.size()];
+		int numOfFilesToScan = 0;
+
+		Iterator<File> e = fileArray.iterator();
+		while (e.hasNext()) {
+			File file = (File) e.next();
+			File dest = new File(destDir.getAbsolutePath() + "/" + file.getName());
+			/* FIXME smart renaming and copy force. */
+
+			Log.i("gallorg", "copy " + file.getAbsolutePath() + " to " + dest.getAbsolutePath());
+			if (copyFile(file, dest)) {
+				Log.i("gallorg", "copyFile returns true.");
+				filesToScan[numOfFilesToScan++] = dest.getAbsolutePath();
+			} else {
+				Log.e("gallorg", "copyFile returns false.");
+				Toast.makeText(this, "Copy Failed! " + dest.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		Log.i("gallorg", "media scanning...");
+		if (numOfFilesToScan > 0) {
+			Log.i("gallorg", Integer.toString(numOfFilesToScan) + " files will be scaned.");
+			MediaScanner scanner = new MediaScanner(this);
+			scanner.scanFile(filesToScan);
+		}
+		return true;
+	}
+
+	private boolean copyFile(File srcFile, File newFile) {
+		try {
+			FileInputStream input = new FileInputStream(srcFile);
+			FileOutputStream output = new FileOutputStream(newFile);
+			byte[] buffer = new byte[COPY_BUFFER_SIZE];
+
+			while (true) {
+				int bytes = input.read(buffer);
+				if (bytes <= 0) {
+					break;
+				}
+				output.write(buffer, 0, bytes);
+			}
+
+			output.close();
+			input.close();
+
+			newFile.setLastModified(srcFile.lastModified());
+		} catch (Exception e) {
+		    return false;
+		}
+		return true;
+	}
+
 	private boolean updateContentProvider() {
 		/* remove from ContentProvider */
 		Iterator<Uri> eu = uriList.iterator();
@@ -232,7 +304,7 @@ public class GallOrgShare extends Activity implements OnClickListener, OnItemSel
 				Log.i("gallorg", "scheme of file is not 'content'. (" + fileUri.getScheme() + ") ignore.");
 				/* XXX how can i alert/broadcast file deletion to parent program? */
 			} else {
-				/* maybe on case of ERROR */
+				/* maybe on case of ERROR or COPYing. */
 				Log.i("gallorg", "selected file(" + file.getName() + ") yet exist. cancel record deletion.");
 			}
 		}
