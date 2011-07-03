@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.scinix.android.gallorg"
-      android:versionName="@string/version" android:versionCode="20110626">
+      android:versionName="@string/version" android:versionCode="20110704">
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name="GallOrgMain"
                   android:label="@string/app_name">

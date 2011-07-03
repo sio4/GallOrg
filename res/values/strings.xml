@@ -15,6 +15,9 @@ Usage is simple. just click \"Share\" menu from gallery.
 \n\t http://twitter.com/scinix
 	</string>
 	<string name="changelogs">ChangeLogs:
+\n * version 1.1.1
+\n\t - thumbnail on info popup.
+\n\t - now "Copy" works.
 \n * version 1.1.0
 \n\t - add module \"GallOrg Info\" for EXIF view.
 \n\t - now scan media by default.
@@ -29,7 +32,7 @@ Usage is simple. just click \"Share\" menu from gallery.
     </string>
     <string name="app_name">GallOrg</string>
 	<string name="photo_info">GallOrg Info</string>
-	<string name="version">1.1.0</string>
+	<string name="version">1.1.1</string>
 
 	<string name="the_end">...end in the end,
 \nthe love you take is equal to the love you make.
