@@ -9,11 +9,13 @@ import java.util.Date;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,6 +30,11 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 	private ArrayList<Uri> uriList = new ArrayList<Uri> ();
 	private Button btnOK;
 	private Button btnTouch;
+
+	private Button btnTU;
+	private Button btnRU;
+	private Button btnBU;
+	private Button btnLU;
 
 	private File target_file = null;
 	private Date target_date = null;
@@ -114,6 +121,15 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 		}
 
 		/* button binding. */
+		btnTU = (Button) findViewById(R.id.btn_topup);
+		btnRU = (Button) findViewById(R.id.btn_rightup);
+		btnBU = (Button) findViewById(R.id.btn_bottomup);
+		btnLU = (Button) findViewById(R.id.btn_leftup);
+		btnTU.setOnClickListener(this);
+		btnRU.setOnClickListener(this);
+		btnBU.setOnClickListener(this);
+		btnLU.setOnClickListener(this);
+
 		btnOK = (Button) findViewById(R.id.btn_ok);
 		btnTouch = (Button) findViewById(R.id.btn_touch);
 		btnOK.setOnClickListener(this);
@@ -132,20 +148,46 @@ public class GallOrgInfo extends Activity implements OnClickListener {
 			case R.id.btn_touch:
 				Toast.makeText(this, R.string.msg_touch, Toast.LENGTH_SHORT).show();
 				target_file.setLastModified(target_date.getTime());
-
-				/* update media */
-				Iterator<Uri> eu = uriList.iterator();
-				while (eu.hasNext()) {
-					Uri fileUri = eu.next();
-					getContentResolver().notifyChange(fileUri, null);
-					/* any smart and perfect... right way?
-					//XXX getContentResolver().delete(fileUri, null, null);
-					MediaScanner scanner = new MediaScanner(this);
-					scanner.scanFile(target_file.getAbsolutePath());
-					*/
-				}
-				finish();
 				break;
+			case R.id.btn_topup:
+				setExifOrientation(target_file, "1");
+				break;
+			case R.id.btn_rightup:
+				setExifOrientation(target_file, "8");
+				break;
+			case R.id.btn_bottomup:
+				setExifOrientation(target_file, "3");
+				break;
+			case R.id.btn_leftup:
+				setExifOrientation(target_file, "6");
+				break;
+		}
+		/* update media */
+		Iterator<Uri> eu = uriList.iterator();
+		while (eu.hasNext()) {
+			Uri fileUri = eu.next();
+			ContentValues values = new ContentValues();
+			/* MediaStore.Images.Media.DATE_MODIFIED = second, Date = millisecond */
+			values.put(MediaStore.Images.Media.DATE_MODIFIED, target_file.lastModified()/1000);
+			getContentResolver().update(fileUri, values, null, null);
+
+			/* any smart and perfect... right way?
+			//XXX getContentResolver().delete(fileUri, null, null);
+			MediaScanner scanner = new MediaScanner(this);
+			scanner.scanFile(target_file.getAbsolutePath());
+			*/
+		}
+		finish();
+	}
+
+	private void setExifOrientation(File file, String orientation) {
+		ExifInterface exif;
+		try {
+			exif = new ExifInterface(file.getAbsolutePath());
+			exif.setAttribute(ExifInterface.TAG_ORIENTATION, orientation);
+			exif.saveAttributes();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

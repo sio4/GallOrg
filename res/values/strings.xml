@@ -48,6 +48,10 @@ Usage is simple. just click \"Share\" menu from gallery.
 	<string name="ok">OK</string>
 	<string name="details">Selection Details:</string>
 
+	<string name="top_up">Top up</string>
+	<string name="right_up">Right up</string>
+	<string name="bottom_up">Bottom up</string>
+	<string name="left_up">Left up</string>
 	<string name="touch">Touch</string>
 	<string name="msg_touch">Touch with Exif Date</string>
 </resources>

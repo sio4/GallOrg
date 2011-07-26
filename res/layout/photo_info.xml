@@ -5,7 +5,7 @@
 	<TableRow
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:layout_margin="10px"
+		android:layout_margin="5px"
 		android:orientation="horizontal"
 		android:gravity="center"
 		android:clickable="true"
@@ -29,6 +29,21 @@
 	<TextView android:text="Exif Info: " android:id="@+id/exif_info"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
 		android:padding="2pt" android:minWidth="320px" />
+	<LinearLayout android:id="@+id/buttons"
+		android:layout_height="wrap_content" android:layout_width="fill_parent">
+		<Button android:text="@string/left_up" android:id="@+id/btn_leftup"
+			android:layout_weight="1.0" android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:padding="1px"/>
+		<Button android:text="@string/top_up" android:id="@+id/btn_topup"
+			android:layout_weight="1.0" android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:padding="1px"/>
+		<Button android:text="@string/bottom_up" android:id="@+id/btn_bottomup"
+			android:layout_weight="1.0" android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:padding="1px"/>
+		<Button android:text="@string/right_up" android:id="@+id/btn_rightup"
+			android:layout_weight="1.0" android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:padding="1px"/>
+	</LinearLayout>
 	<LinearLayout android:id="@+id/buttons"
 		android:layout_height="wrap_content" android:layout_width="fill_parent">
 		<Button android:text="@string/touch" android:id="@+id/btn_touch"
